@@ -29,7 +29,7 @@ module.exports = async({ token, repo, keys, versionType }) => {
     const markdown = MarkdownGenerator.generate({
       keys, owner, repo: repoName, oldTag: release.tag, newTag: version.tag, commits
     })
-    // await git.createRelease({ name: version.name, tag: version.tag, markdown })
+    await git.createRelease({ name: version.name, tag: version.tag, markdown })
     logger.success(`Release ${logger.bold(version.tag)} generated successfully.`)
   } catch (error) {
     logger.error(error)
