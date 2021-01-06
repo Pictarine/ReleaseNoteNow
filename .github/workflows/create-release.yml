@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Create release
+      - name: Install dependencies
+        run: npm install
+
+      # Create release
+      - name: Run a multi-line script
+        run: |
+          npm run rn \
+            -- \
+            -t ${{ secrets.GITHUB_TOKEN }} \
+            -r Pictarine/ReleaseNoteNow \
+            -v "package.json:package.json"
