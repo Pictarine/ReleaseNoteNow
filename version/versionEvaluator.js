@@ -39,7 +39,7 @@ versionEvaluator.register({
     const newTag = +oldTag + +option
     return {
       name: `Release ${newTag}`,
-      tag: newTag
+      tag: `${newTag}`
     }
   }
 })
