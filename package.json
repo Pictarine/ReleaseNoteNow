@@ -3,7 +3,9 @@
   "version": "1.0.1",
   "description": "Automatic release note generator for GitHub projects",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "rn": "./bin/cli.js"
+  },
   "bin": {
     "release-note-now": "./bin/cli.js"
   },
