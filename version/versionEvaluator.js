@@ -75,7 +75,7 @@ versionEvaluator.register({
 // ##################################################
 versionEvaluator.register({
   key: 'package.json',
-  async evaluate({ option }) {
+  async evaluate({ option, git }) {
     const fileContent = await git.getFileContent({ path: option })
     const packageJSON = JSON.parse(fileContent)
     const version = packageJSON.version
