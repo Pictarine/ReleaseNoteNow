@@ -88,9 +88,9 @@ module.exports = class Git {
         return Promise.resolve(fileContent)
       })
   }
-  async createRelease({ name, tag, markdown }) {
+  async createRelease({ branch, name, tag, markdown }) {
     this.octokit
       .repos
-      .createRelease(Object.assign({ tag_name: tag, name, body: markdown }, this.repo))
+      .createRelease(Object.assign({ tag_name: tag, name, target_commitish: branch, body: markdown }, this.repo))
   }
 }
