@@ -5,7 +5,7 @@ const logger = require('../helpers/logger')
 
 const args = yargs
   .version(false)
-  .usage('Usage: $0 -t [github_token] -r [owner/repository] -k [prefix_keys] -v [new_version]')
+  .usage('Usage: $0 -t [github_token] -r [owner/repository] -b [target_branch] -k [prefix_keys] -v [new_version]')
   .option('token', {
     alias: 't',
     demandOption: true,
@@ -15,6 +15,11 @@ const args = yargs
     alias: 'r',
     demandOption: true,
     describe: 'GitHub repository (owner/repo)'
+  })
+  .option('branch', {
+    alias: 'b',
+    demandOption: false,
+    describe: 'Name of the branch to release'
   })
   .option('keys', {
     alias: 'k',
@@ -38,5 +43,6 @@ releaseNoteNow({
   token: args.token,
   repo: args.repo,
   keys: args.keys,
-  versionType: args.version
+  versionType: args.version,
+  branch: args.branch
 })
