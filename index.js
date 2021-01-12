@@ -6,7 +6,7 @@ const versionEvaluator = require('./version/versionEvaluator')
 module.exports = async({ token, repo, branch, keys, versionType }) => {
   try {
     const [owner, repoName] = repo.split('/')
-    const git = new Git({ owner, repo: repoName, token })
+    const git = new Git({ owner, repo: repoName, branch, token })
     const release = await git
       .getLatestRelease()
       .then(release => {

@@ -1,8 +1,9 @@
 const { Octokit } = require("@octokit/rest")
 
 module.exports = class Git {
-  constructor({ owner, repo, token }) {
+  constructor({ owner, repo, branch, token }) {
     this.repo = { owner, repo }
+    this.branch = branch
     this.octokit = new Octokit({ auth: token })
     this.responseHandler = (response) => response.data
   }
@@ -46,7 +47,7 @@ module.exports = class Git {
   async getCommits({ until }) {
     const self = this
     const internalGetCommits = async({ searchedCommits, until }) => {
-      const lastCommit = searchedCommits.length === 0 ? undefined : searchedCommits[searchedCommits.length-1].sha
+      const lastCommit = searchedCommits.length === 0 ? this.branch : searchedCommits[searchedCommits.length-1].sha
       return self.octokit
         .repos
         .listCommits(lastCommit ? Object.assign({ sha: lastCommit }, self.repo) : self.repo)
