@@ -9,7 +9,7 @@ module.exports = class Markdown {
       return Object.assign(result, { [key]: [] })
     }, {})
     // Sorting commits by keys
-    const evaluatedGroups = commits.reduce((previousGroups, commit) => {
+    commits.reduce((previousGroups, commit) => {
       const message = commit.message
       const markStart = message.indexOf('[')
       const markEnd = message.indexOf(']')
@@ -30,8 +30,12 @@ module.exports = class Markdown {
       `[Différence avec la version ${oldTag}](https://github.com/${owner}/${repo}/compare/${oldTag}...${newTag})`
     ]
     searchableKeys.forEach(key => {
+      const commitsForKey = commitGroups[key]
+      if (commitsForKey.length === 0) {
+        return
+      }
       result.push(`## ${keysObject[key]}`)
-      commitGroups[key].forEach(commit => result.push(commit))
+      commitsForKey.forEach(commit => result.push(commit))
     })
     return result.join('\n')
   }

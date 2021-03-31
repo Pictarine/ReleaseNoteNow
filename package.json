@@ -1,6 +1,6 @@
 {
   "name": "@pictarine/release-note-now",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Automatic release note generator for GitHub projects",
   "main": "index.js",
   "scripts": {
