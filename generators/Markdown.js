@@ -1,5 +1,5 @@
 module.exports = class Markdown {
-  static generate({ keys, owner, repo, oldTag, newTag, commits }) {
+  static generate({ keys, owner, repo, oldTag, newTag, commits, style }) {
     const keysObject = keys.split(',').reduce((object, key) => {
       const [keyId, keyName] = key.split(':')
       return Object.assign(object, { [keyId]: keyName })
@@ -10,7 +10,7 @@ module.exports = class Markdown {
     }, {})
     // Sorting commits by keys
     commits.reduce((previousGroups, commit) => {
-      const message = commit.message
+      const message = style === 'short' ? commit.message.split('\n')[0] : commit.message
       const markStart = message.indexOf('[')
       const markEnd = message.indexOf(']')
       if (markStart !== 0 || markEnd === -1) {

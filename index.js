@@ -3,7 +3,7 @@ const logger = require('./helpers/logger')
 const MarkdownGenerator = require('./generators/Markdown')
 const versionEvaluator = require('./version/versionEvaluator')
 
-module.exports = async({ token, repo, branch, keys, versionType }) => {
+module.exports = async({ token, repo, branch, keys, versionType, style }) => {
   try {
     const [owner, repoName] = repo.split('/')
     const git = new Git({ owner, repo: repoName, branch, token })
@@ -27,7 +27,7 @@ module.exports = async({ token, repo, branch, keys, versionType }) => {
       git
     })
     const markdown = MarkdownGenerator.generate({
-      keys, owner, repo: repoName, oldTag: release.tag, newTag: version.tag, commits
+      keys, owner, repo: repoName, oldTag: release.tag, newTag: version.tag, commits, style
     })
     await git.createRelease({ branch, name: version.name, tag: version.tag, markdown })
     logger.success(`Release ${logger.bold(version.tag)} generated successfully.`)
