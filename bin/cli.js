@@ -5,7 +5,7 @@ const logger = require('../helpers/logger')
 
 const args = yargs
   .version(false)
-  .usage('Usage: $0 -t [github_token] -r [owner/repository] -b [target_branch] -k [prefix_keys] -v [new_version]')
+  .usage('Usage: $0 -t [github_token] -r [owner/repository] -b [target_branch] -k [prefix_keys] -v [new_version] -s [message_style]')
   .option('token', {
     alias: 't',
     demandOption: true,
@@ -30,6 +30,12 @@ const args = yargs
     alias: 'v',
     demandOption: true
   })
+  .option('style', {
+    alias: 's',
+    demandOption: false,
+    describe: 'Commit message to markdown conversion style: short/full',
+    default: 'full'
+  })
   .fail((...args) => {
     const [message, error, yargs] = args
     logger.error(error || `${message}\n\n${yargs.help()}`)
@@ -44,5 +50,6 @@ releaseNoteNow({
   repo: args.repo,
   keys: args.keys,
   versionType: args.version,
-  branch: args.branch
+  branch: args.branch,
+  style: args.style
 })
