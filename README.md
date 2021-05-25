@@ -35,11 +35,13 @@ npm run rn \
 ### Options
 
 ```
-    --help     Show help                        [boolean]
--t, --token    GitHub Token                     [required]
--r, --repo     GitHub repository (owner/repo)   [required]
--k, --keys                                      [required] [default: "feat:Features,fix:Fixes"]
--v, --version                                   [required]
+    --help     Show help                             [boolean]
+-t, --token    GitHub Token                          [required]
+-r, --repo     GitHub repository (owner/repo)        [required]
+-b, --branch   Github branch                         [optional] [default: the default branch of the repo]
+-k, --keys                                           [required] [default: "feat:Features,fix:Fixes"]
+-v, --version                                        [required]
+-s, --style    Commit message style (full/short)     [optional] [default: full]
 ```
 
 > For the -k option, you can define any key+title that will be searched in commit list.
