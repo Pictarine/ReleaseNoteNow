@@ -1,14 +1,16 @@
 const { Octokit } = require("@octokit/rest")
 
 module.exports = class Git {
-  constructor({ owner, repo, branch, token }) {
+  constructor({ owner, repo, branch, prefix, token }) {
     this.repo = { owner, repo }
     this.branch = branch
+    this.prefix = prefix
     this.octokit = new Octokit({ auth: token })
     this.responseHandler = (response) => response.data
   }
   async getLatestRelease() {
-    return this.octokit
+    if (this.prefix.length == 0) {
+      return this.octokit
       .repos
       .getLatestRelease(this.repo)
       .then(this.responseHandler)
@@ -19,6 +21,33 @@ module.exports = class Git {
         }
         return result
       })
+    } else {
+      const self = this
+      const internalGetLatestRelease = async({ page, per_page }) => {
+       return self.octokit
+       .repos
+       .listReleases(Object.assign({ page, per_page }, self.repo))
+       .then(this.responseHandler)
+       .then(responseData => {
+         const releases = responseData.map(releaseData => {
+           return {
+             name: releaseData.name,
+             tag: releaseData.tag_name
+           }
+         })
+         for (const release of releases) {
+           if (release.tag.startsWith(self.prefix + '_')) {
+             return release
+           }
+         }
+         if (releases.length < per_page) {
+           return null
+         } else {
+           return internalGetLatestRelease({ page: page+1, per_page })
+         }
+       })
+     }
+     return internalGetLatestRelease({ page: 1, per_page: 100})    }
   }
   async getTagByName({ tag }) {
     const self = this

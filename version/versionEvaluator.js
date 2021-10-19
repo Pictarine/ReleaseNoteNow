@@ -9,7 +9,7 @@ const versionEvaluator = {
     logger.print(`versionEvaluator.register [${logger.bold(key)}]`)
     this.$evaluators[key] = evaluate
   },
-  async evaluate({ type, oldTag, git }) {
+  async evaluate({ type, oldTag, prefix, git }) {
     let versionType = type
     let option = null
     if (versionType.includes(':')) {
@@ -24,6 +24,7 @@ const versionEvaluator = {
     return evaluator({
       oldTag: oldTag,
       option: option,
+      prefix: prefix,
       git: git
     })
   }
@@ -34,11 +35,13 @@ const versionEvaluator = {
 // ##################################################
 versionEvaluator.register({
   key: 'increment',
-  evaluate({ oldTag, option }) {
+  evaluate({ oldTag, option, prefix }) {
     const incrementStep = option || '1'
-    const newTag = +oldTag + +option
+    const oldVersionNumber = prefix.length > 0 ? oldTag.slice(prefix.length + 1) : oldTag
+    const newVersionNumber = +oldVersionNumber + +option
+    const newTag = prefix.length > 0 ? `${prefix}_${newVersionNumber}` : newVersionNumber
     return {
-      name: `Release ${newTag}`,
+      name: `Release ${newTag}` + (prefix.length > 0 ? ` (${prefix.capitalize()})` : ``),
       tag: `${newTag}`
     }
   }
@@ -49,7 +52,7 @@ versionEvaluator.register({
 // ##################################################
 versionEvaluator.register({
   key: 'xcconfig',
-  async evaluate({ option, git }) {
+  async evaluate({ option, prefix, git }) {
     try {
       const fileContent = await git.getFileContent({ path: option })
       const xcodeVersion = fileContent
@@ -60,9 +63,10 @@ versionEvaluator.register({
           previous[key.split('_')[0].toLowerCase()] = version
           return previous
         }, [])
+      const newTag = (prefix.length > 0 ? `${prefix}_` : ``) + `${xcodeVersion.version}_${xcodeVersion.build}`
       return {
-        name: `Release ${xcodeVersion.version} (Build ${xcodeVersion.build})`,
-        tag: `${xcodeVersion.version}_${xcodeVersion.build}`
+        name: `Release ${xcodeVersion.version}`+ (prefix.length > 0 ? ` (${prefix.capitalize()} Build ${xcodeVersion.build})` : ` (Build ${xcodeVersion.build})`),
+        tag: newTag
       }
     } catch {
       return Promise.reject(`File with path [${option}] not found in repository`)
@@ -75,15 +79,20 @@ versionEvaluator.register({
 // ##################################################
 versionEvaluator.register({
   key: 'package.json',
-  async evaluate({ option, git }) {
+  async evaluate({ option, prefix, git }) {
     const fileContent = await git.getFileContent({ path: option })
     const packageJSON = JSON.parse(fileContent)
     const version = packageJSON.version
+    const newTag = (prefix.length > 0 ? `${prefix}_` : ``) + `${version}`
     return {
-      name: `Release ${version}`,
-      tag: version
+      name: `Release ${version}` + (prefix.length > 0 ? ` (${prefix.capitalize()})` : ``),
+      tag: newTag
     }
   }
 })
+
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1)
+}
 
 module.exports = versionEvaluator
