@@ -56,12 +56,15 @@ module.exports = class Git {
       .getRef(Object.assign({ ref: `tags/${tag}` }, this.repo))
       .then(this.responseHandler)
       .then(responseData => {
-        const ref = {
-          sha: responseData.object.sha
-        }
+        // NOTE: This is necessary because the tag-ref SHA can be different from associated commit SHA
         return self.octokit
           .git
-          .getCommit(Object.assign({ commit_sha: ref.sha }, self.repo))
+          .getTag(Object.assign({ tag_sha: responseData.object.sha }, self.repo))
+      })
+      .then(responseData => {
+        return self.octokit
+          .git
+          .getCommit(Object.assign({ commit_sha: responseData.data.object.sha }, self.repo))
       })
       .then(this.responseHandler)
       .then(responseData => {
