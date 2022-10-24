@@ -60,6 +60,10 @@ module.exports = class Git {
         return self.octokit
           .git
           .getTag(Object.assign({ tag_sha: responseData.object.sha }, self.repo))
+          .catch(() => {
+            // NOTE: If it's the same, the catch will just return the same SHA, without the GET /Tag
+            return { data: { object: { sha: responseData.object.sha } } }
+          })
       })
       .then(responseData => {
         return self.octokit
